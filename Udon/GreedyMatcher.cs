@@ -1,0 +1,96 @@
+using System;
+
+namespace Narazaka.VRChat.MatchingSystem
+{
+    public class GreedyMatcher
+    {
+        /// <summary>
+        /// Executes the greedy matching algorithm.
+        /// </summary>
+        /// <returns>2 * N array of player indices, where N is the number of pairs.</returns>
+        public static int[] MakeMatching(MatchingPlayerRoom[] players)
+        {
+            var playerCount = players.Length;
+
+            if (playerCount < 2)
+            {
+                return new int[0];
+            }
+
+            // 2. Create all possible pairs and store them in parallel arrays
+            int pairCount = playerCount * (playerCount - 1) / 2;
+            var pairWeights = new int[pairCount];
+            var pairPlayerIndices1 = new int[pairCount];
+            var pairPlayerIndices2 = new int[pairCount];
+            int currentPairIndex = 0;
+
+            for (int i = 0; i < playerCount; i++)
+            {
+                for (int j = i + 1; j < playerCount; j++)
+                {
+                    // Invert weight to sort descending with an ascending sort algorithm
+                    pairWeights[currentPairIndex] = -CalculateWeight(players[i], players[j]);
+                    pairPlayerIndices1[currentPairIndex] = i;
+                    pairPlayerIndices2[currentPairIndex] = j;
+                    currentPairIndex++;
+                }
+            }
+
+            // 3. Sort pairs by inverted weight (ascending).
+            // Create an array of indices [0, 1, 2, ...] to be sorted according to the weights.
+            var pairOrder = new int[pairCount];
+            for (int i = 0; i < pairCount; i++)
+            {
+                pairOrder[i] = i;
+            }
+
+            // Sort the pairOrder array based on the keys in pairWeights.
+            Array.Sort((Array)pairWeights, (Array)pairOrder);
+
+            // 4. Greedily select pairs using the sorted order
+            var matchedPlayerIndices = new bool[playerCount];
+            var finalMatchedPairs_Player1 = new int[playerCount / 2];
+            var finalMatchedPairs_Player2 = new int[playerCount / 2];
+            int finalPairCount = 0;
+
+            for (int i = 0; i < pairCount; i++)
+            {
+                int originalPairIndex = pairOrder[i];
+                int pIndex1 = pairPlayerIndices1[originalPairIndex];
+                int pIndex2 = pairPlayerIndices2[originalPairIndex];
+
+                if (!matchedPlayerIndices[pIndex1] && !matchedPlayerIndices[pIndex2])
+                {
+                    finalMatchedPairs_Player1[finalPairCount] = pIndex1;
+                    finalMatchedPairs_Player2[finalPairCount] = pIndex2;
+                    finalPairCount++;
+
+                    matchedPlayerIndices[pIndex1] = true;
+                    matchedPlayerIndices[pIndex2] = true;
+                }
+            }
+
+            // 5. Store the results in a flattened array
+            var resultMatchedPlayerIds = new int[finalPairCount * 2];
+            for (int i = 0; i < finalPairCount; i++)
+            {
+                resultMatchedPlayerIds[i * 2] = finalMatchedPairs_Player1[i];
+                resultMatchedPlayerIds[i * 2 + 1] = finalMatchedPairs_Player2[i];
+            }
+            return resultMatchedPlayerIds;
+        }
+
+        /// <summary>
+        /// Calculates the weight between two players.
+        /// 
+        /// higher weight means better match.
+        /// </summary>
+        static int CalculateWeight(MatchingPlayerRoom player1, MatchingPlayerRoom player2)
+        {
+            var score = 0;
+            score -= Array.IndexOf(player1.MatchingPlayer.MatchedPlayerHashes, player2.Owner.playerId) * 100;
+            score -= Array.IndexOf(player2.MatchingPlayer.MatchedPlayerHashes, player1.Owner.playerId) * 100;
+            return score;
+        }
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "name": "Narazaka.VRChat.MatchingSystem.Editor",
+    "rootNamespace": "",
+    "references": [
+        "VRC.SDKBase",
+        "VRC.Udon",
+        "VRC.Udon.Serialization.OdinSerializer",
+        "UdonSharp.Runtime",
+        "Narazaka.VRChat.MatchingSystem",
+        "Narazaka.VRChat.MatchingSystem.Runtime",
+        "Cyan.PlayerObjectPool.UdonSharp"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

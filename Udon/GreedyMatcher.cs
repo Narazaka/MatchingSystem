@@ -10,6 +10,7 @@ namespace Narazaka.VRChat.MatchingSystem
         /// <returns>2 * N array of player indices, where N is the number of pairs.</returns>
         public static int[] MakeMatching(MatchingPlayerRoom[] players)
         {
+            Logger.Log(nameof(GreedyMatcher), nameof(MakeMatching), $"(Start) {players.Length} players");
             var playerCount = players.Length;
 
             if (playerCount < 2)
@@ -77,6 +78,7 @@ namespace Narazaka.VRChat.MatchingSystem
                 resultMatchedPlayerIds[i * 2] = finalMatchedPairs_Player1[i];
                 resultMatchedPlayerIds[i * 2 + 1] = finalMatchedPairs_Player2[i];
             }
+            Logger.Log(nameof(GreedyMatcher), nameof(MakeMatching), $"(End) {players.Length} players");
             return resultMatchedPlayerIds;
         }
 

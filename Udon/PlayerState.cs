@@ -1,8 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Narazaka.VRChat.MatchingSystem
 {
     public static class PlayerState

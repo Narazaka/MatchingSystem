@@ -117,6 +117,7 @@ namespace Narazaka.VRChat.MatchingSystem
 
         void OnStartSession()
         {
+            Logger.Log(nameof(MatchingPlayerRoom), nameof(OnStartSession), Owner, $"room=({RoomId})[{SpawnPointIndex}] {(Remaining ? "(Remaining)" : "")}");
             if (!Remaining)
             {
                 MatchingPlayer._OnChangePair();

@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using TMPro;
+﻿using TMPro;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,17 +27,11 @@ namespace Narazaka.VRChat.MatchingSystem
             }
         }
 
-        /// <summary>
-        /// by ui
-        /// </summary>
         public void _ToggleReserveLeave()
         {
             MatchingPlayer._ToggleReserveLeave();
         }
 
-        /// <summary>
-        /// by ui
-        /// </summary>
         public void _ToggleReserveRemain()
         {
             MatchingPlayer._ToggleReserveRemain();

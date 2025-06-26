@@ -14,7 +14,7 @@ namespace Narazaka.VRChat.MatchingSystem
         [SerializeField] public Teleporter Teleporter;
         [SerializeField] public MatchingPlayer TemplateMatchingPlayer;
 
-        public MatchingPlayer MatchingPlayer;
+        internal MatchingPlayer MatchingPlayer;
 
         public override void _OnOwnerSet()
         {
@@ -42,7 +42,7 @@ namespace Narazaka.VRChat.MatchingSystem
         }
 
         [UdonSynced, FieldChangeCallback(nameof(JoiningSessionId))] short _joiningSessionId = -1;
-        public short JoiningSessionId
+        internal short JoiningSessionId
         {
             get => _joiningSessionId;
             set
@@ -58,9 +58,9 @@ namespace Narazaka.VRChat.MatchingSystem
         [UdonSynced] uint MatchedPlayerHash;
         uint prevMatchedPlayerHash;
 
-        [UdonSynced, NonSerialized] public bool Remaining;
+        [UdonSynced, NonSerialized] internal bool Remaining;
         [UdonSynced] sbyte _roomAndSpawnPoint = -1;
-        public sbyte RoomAndSpawnPoint
+        internal sbyte RoomAndSpawnPoint
         {
             get => _roomAndSpawnPoint;
             set
@@ -68,16 +68,16 @@ namespace Narazaka.VRChat.MatchingSystem
                 _roomAndSpawnPoint = value;
             }
         }
-        public int RoomId { get => RoomAndSpawnPoint >> 1; }
+        internal int RoomId { get => RoomAndSpawnPoint >> 1; }
         int SpawnPointIndex { get => RoomAndSpawnPoint & 1; }
-        public bool Joined { get => RoomAndSpawnPoint != -1; }
+        internal bool Joined { get => RoomAndSpawnPoint != -1; }
 
-        public uint SelfPlayerHash { get => SimpleHash.FNV1a32String.ComputeHash(Owner.displayName); }
+        internal uint SelfPlayerHash { get => SimpleHash.FNV1a32String.ComputeHash(Owner.displayName); }
 
         /// <summary>
         /// by manager (owner)
         /// </summary>
-        public void _SetRoom(sbyte roomAndSpawnPoint)
+        internal void _SetRoom(sbyte roomAndSpawnPoint)
         {
             RoomAndSpawnPoint = roomAndSpawnPoint;
             Remaining = false;
@@ -87,7 +87,7 @@ namespace Narazaka.VRChat.MatchingSystem
         /// <summary>
         /// by manager (owner)
         /// </summary>
-        public void _SetRemaining()
+        internal void _SetRemaining()
         {
             Remaining = true;
             RequestSerialization();
@@ -96,7 +96,7 @@ namespace Narazaka.VRChat.MatchingSystem
         /// <summary>
         /// by manager (owner)
         /// </summary>
-        public void _SetMatch(uint matchedPlayerHash, bool matched)
+        internal void _SetMatch(uint matchedPlayerHash, bool matched)
         {
             Matched = matched;
             MatchedPlayerHash = matchedPlayerHash;
@@ -109,7 +109,7 @@ namespace Narazaka.VRChat.MatchingSystem
         /// 
         /// call last
         /// </summary>
-        public void _SetJoiningSessionId(short sessionId)
+        internal void _SetJoiningSessionId(short sessionId)
         {
             JoiningSessionId = sessionId;
             RequestSerialization();

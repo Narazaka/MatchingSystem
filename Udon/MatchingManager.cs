@@ -11,12 +11,12 @@ namespace Narazaka.VRChat.MatchingSystem
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class MatchingManager : UdonSharpBehaviour
     {
-        [SerializeField, UdonSynced] public float SessionTimeout = 300f; // 5min
+        [SerializeField, UdonSynced] internal float SessionTimeout = 300f; // 5min
         [SerializeField] CyanPlayerObjectAssigner Assigner;
         [SerializeField] public MatchingRoom[] Rooms;
 
         [UdonSynced, NonSerialized] long SessionStartTimeTick;
-        public DateTime SessionStartTime
+        internal DateTime SessionStartTime
         {
             get => new DateTime(SessionStartTimeTick);
             set
@@ -25,7 +25,7 @@ namespace Narazaka.VRChat.MatchingSystem
             }
         }
         [UdonSynced, NonSerialized, FieldChangeCallback(nameof(SessionId))] short _sessionId = -1; // 68 days (by 3min)
-        public short SessionId
+        internal short SessionId
         {
             get => _sessionId;
             set
@@ -53,7 +53,7 @@ namespace Narazaka.VRChat.MatchingSystem
         /// <summary>
         /// by ui udon (owner)
         /// </summary>
-        public void _Join(VRCPlayerApi player)
+        internal void _Join(VRCPlayerApi player)
         {
             var subjectPlayerRoom = GetMatchingPlayerRoom(player);
 
@@ -105,14 +105,14 @@ namespace Narazaka.VRChat.MatchingSystem
         /// by spawn area collider trigger udon (owner)
         /// </summary>
         /// <param name="player"></param>
-        public void _Leave(VRCPlayerApi player)
+        internal void _Leave(VRCPlayerApi player)
         {
             var subjectPlayerRoom = GetMatchingPlayerRoom(player);
             subjectPlayerRoom._SetRoom(-1);
             subjectPlayerRoom._SetJoiningSessionId(-1);
         }
 
-        public void _TryInitializeSession()
+        internal void _TryInitializeSession()
         {
             if (IsOwner && SessionId >= 0) // do not trigger first session
             {

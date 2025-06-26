@@ -12,14 +12,14 @@ namespace Narazaka.VRChat.MatchingSystem
         [SerializeField] MatchedPlayerMemory MatchedPlayerMemory;
 
         [UdonSynced] sbyte State;
-        public bool ReserveLeave => State == PlayerState.ReserveLeave;
-        public bool ReserveRemain => State == PlayerState.ReserveRemain;
+        internal bool ReserveLeave => State == PlayerState.ReserveLeave;
+        internal bool ReserveRemain => State == PlayerState.ReserveRemain;
 
-        public uint[] MatchedPlayerHashes => MatchedPlayerMemory.MatchedPlayerHashes;
+        internal uint[] MatchedPlayerHashes => MatchedPlayerMemory.MatchedPlayerHashes;
 
-        public void _AddMatchedPlayerHash(uint matchedPlayerHash) => MatchedPlayerMemory._AddMatchedPlayer(matchedPlayerHash);
+        internal void _AddMatchedPlayerHash(uint matchedPlayerHash) => MatchedPlayerMemory._AddMatchedPlayer(matchedPlayerHash);
 
-        public void _OnChangePair()
+        internal void _OnChangePair()
         {
             ResetState();
         }
@@ -33,7 +33,7 @@ namespace Narazaka.VRChat.MatchingSystem
         /// <summary>
         /// by ui
         /// </summary>
-        public void _ToggleReserveLeave()
+        internal void _ToggleReserveLeave()
         {
             State = State == PlayerState.ReserveLeave ? PlayerState.Idle : PlayerState.ReserveLeave;
             RequestSerialization();
@@ -42,7 +42,7 @@ namespace Narazaka.VRChat.MatchingSystem
         /// <summary>
         /// by ui
         /// </summary>
-        public void _ToggleReserveRemain()
+        internal void _ToggleReserveRemain()
         {
             State = State == PlayerState.ReserveRemain ? PlayerState.Idle : PlayerState.ReserveRemain;
             RequestSerialization();

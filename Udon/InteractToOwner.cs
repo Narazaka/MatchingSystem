@@ -19,7 +19,7 @@ namespace Narazaka.VRChat.MatchingSystem
         [NetworkCallable]
         public void _Join(int playerId)
         {
-            if (Networking.IsOwner(MatchingManager.gameObject)) MatchingManager.Join(VRCPlayerApi.GetPlayerById(playerId));
+            if (Networking.IsOwner(MatchingManager.gameObject)) MatchingManager._Join(VRCPlayerApi.GetPlayerById(playerId));
         }
     }
 }

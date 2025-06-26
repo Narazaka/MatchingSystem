@@ -6,19 +6,17 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
-[assembly: InternalsVisibleTo("Narazaka.VRChat.MatchingSystem.Editor")]
-
 namespace Narazaka.VRChat.MatchingSystem
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class MatchingManager : UdonSharpBehaviour
     {
-        [SerializeField, UdonSynced] internal float SessionTimeout = 300f; // 5min
+        [SerializeField, UdonSynced] public float SessionTimeout = 300f; // 5min
         [SerializeField] CyanPlayerObjectAssigner Assigner;
-        [SerializeField] internal MatchingRoom[] Rooms;
+        [SerializeField] public MatchingRoom[] Rooms;
 
-        [UdonSynced] long SessionStartTimeTick;
-        internal DateTime SessionStartTime
+        [UdonSynced, NonSerialized] long SessionStartTimeTick;
+        public DateTime SessionStartTime
         {
             get => new DateTime(SessionStartTimeTick);
             set
@@ -26,8 +24,8 @@ namespace Narazaka.VRChat.MatchingSystem
                 SessionStartTimeTick = value.Ticks;
             }
         }
-        [UdonSynced, FieldChangeCallback(nameof(SessionId))] short _sessionId = -1; // 68 days (by 3min)
-        internal short SessionId
+        [UdonSynced, NonSerialized, FieldChangeCallback(nameof(SessionId))] short _sessionId = -1; // 68 days (by 3min)
+        public short SessionId
         {
             get => _sessionId;
             set
@@ -49,13 +47,13 @@ namespace Narazaka.VRChat.MatchingSystem
         public override void OnPlayerLeft(VRCPlayerApi player)
         {
             if (!IsOwner) return;
-            Leave(player);
+            _Leave(player);
         }
 
         /// <summary>
         /// by ui udon (owner)
         /// </summary>
-        public void Join(VRCPlayerApi player)
+        public void _Join(VRCPlayerApi player)
         {
             var subjectPlayerRoom = GetMatchingPlayerRoom(player);
 
@@ -80,24 +78,24 @@ namespace Narazaka.VRChat.MatchingSystem
                 var spawnIndex = indexByRoom[oneRoomIndex * 2] == 0 ? 0 : 1;
                 var otherIndex = indexByRoom[oneRoomIndex * 2 + (spawnIndex == 0 ? 1 : 0)];
                 var otherPlayerRoom = (MatchingPlayerRoom)playerRoomComponents[otherIndex - 1];
-                subjectPlayerRoom.SetRoom((sbyte)(oneRoomIndex * 2 + spawnIndex));
-                subjectPlayerRoom.SetMatch(otherPlayerRoom.SelfPlayerHash, true);
-                subjectPlayerRoom.SetJoiningSessionId(SessionId);
-                otherPlayerRoom.SetMatch(subjectPlayerRoom.SelfPlayerHash, true);
+                subjectPlayerRoom._SetRoom((sbyte)(oneRoomIndex * 2 + spawnIndex));
+                subjectPlayerRoom._SetMatch(otherPlayerRoom.SelfPlayerHash, true);
+                subjectPlayerRoom._SetJoiningSessionId(SessionId);
+                otherPlayerRoom._SetMatch(subjectPlayerRoom.SelfPlayerHash, true);
             }
             else
             {
                 var zeroRoomIndex = Array.IndexOf(playerCountsByRoom, 0);
                 if (zeroRoomIndex >= 0)
                 {
-                    subjectPlayerRoom.SetRoom((sbyte)(zeroRoomIndex * 2));
-                    subjectPlayerRoom.SetJoiningSessionId(SessionId);
+                    subjectPlayerRoom._SetRoom((sbyte)(zeroRoomIndex * 2));
+                    subjectPlayerRoom._SetJoiningSessionId(SessionId);
                 }
                 else
                 {
                     // no room available!!!!
-                    subjectPlayerRoom.SetRoom(-1);
-                    subjectPlayerRoom.SetJoiningSessionId(-1);
+                    subjectPlayerRoom._SetRoom(-1);
+                    subjectPlayerRoom._SetJoiningSessionId(-1);
                 }
             }
         }
@@ -107,14 +105,14 @@ namespace Narazaka.VRChat.MatchingSystem
         /// by spawn area collider trigger udon (owner)
         /// </summary>
         /// <param name="player"></param>
-        public void Leave(VRCPlayerApi player)
+        public void _Leave(VRCPlayerApi player)
         {
             var subjectPlayerRoom = GetMatchingPlayerRoom(player);
-            subjectPlayerRoom.SetRoom(-1);
-            subjectPlayerRoom.SetJoiningSessionId(-1);
+            subjectPlayerRoom._SetRoom(-1);
+            subjectPlayerRoom._SetJoiningSessionId(-1);
         }
 
-        internal void TryInitializeSession()
+        public void _TryInitializeSession()
         {
             if (IsOwner && SessionId >= 0) // do not trigger first session
             {
@@ -166,13 +164,13 @@ namespace Narazaka.VRChat.MatchingSystem
                 var playerRoom = playerRooms[i];
                 if (leaves[i])
                 {
-                    playerRoom.SetRoom(-1);
-                    playerRoom.SetJoiningSessionId(-1);
+                    playerRoom._SetRoom(-1);
+                    playerRoom._SetJoiningSessionId(-1);
                 }
                 else if (remains[i])
                 {
-                    playerRoom.SetRemaining();
-                    playerRoom.SetJoiningSessionId(nextSessionId);
+                    playerRoom._SetRemaining();
+                    playerRoom._SetJoiningSessionId(nextSessionId);
                 }
                 else if (playerRoom.Joined)
                 {
@@ -196,12 +194,12 @@ namespace Narazaka.VRChat.MatchingSystem
                 var matchedIndex2 = matchedPlayerRoomIndexes[i + 1];
                 var playerRoom1 = shufflePlayerRoomsResized[matchedIndex1];
                 var playerRoom2 = shufflePlayerRoomsResized[matchedIndex2];
-                playerRoom1.SetRoom((sbyte)(roomIndex * 2));
-                playerRoom1.SetMatch(playerRoom2.SelfPlayerHash, true);
-                playerRoom1.SetJoiningSessionId(nextSessionId);
-                playerRoom2.SetRoom((sbyte)(roomIndex * 2 + 1));
-                playerRoom2.SetMatch(playerRoom1.SelfPlayerHash, true);
-                playerRoom2.SetJoiningSessionId(nextSessionId);
+                playerRoom1._SetRoom((sbyte)(roomIndex * 2));
+                playerRoom1._SetMatch(playerRoom2.SelfPlayerHash, true);
+                playerRoom1._SetJoiningSessionId(nextSessionId);
+                playerRoom2._SetRoom((sbyte)(roomIndex * 2 + 1));
+                playerRoom2._SetMatch(playerRoom1.SelfPlayerHash, true);
+                playerRoom2._SetJoiningSessionId(nextSessionId);
                 matched[matchedIndex1] = true;
                 matched[matchedIndex2] = true;
                 roomIndex++;
@@ -210,8 +208,8 @@ namespace Narazaka.VRChat.MatchingSystem
             if (unmatchedIndex >= 0)
             {
                 var unmatchedPlayerRoom = shufflePlayerRoomsResized[unmatchedIndex];
-                unmatchedPlayerRoom.SetRoom((sbyte)(roomIndex * 2));
-                unmatchedPlayerRoom.SetJoiningSessionId(nextSessionId);
+                unmatchedPlayerRoom._SetRoom((sbyte)(roomIndex * 2));
+                unmatchedPlayerRoom._SetJoiningSessionId(nextSessionId);
             }
 
             SessionId = nextSessionId;
@@ -241,7 +239,7 @@ namespace Narazaka.VRChat.MatchingSystem
             }
             for (var i = 0; i < roomLen; i++)
             {
-                if (!remainRooms[i]) Rooms[i].ResetRoom(Networking.GetOwner(gameObject));
+                if (!remainRooms[i]) Rooms[i]._ResetRoom(Networking.GetOwner(gameObject));
             }
         }
 

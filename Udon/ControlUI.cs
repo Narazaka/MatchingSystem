@@ -61,7 +61,7 @@ namespace Narazaka.VRChat.MatchingSystem
         {
             if (Networking.IsOwner(MatchingManager.gameObject))
             {
-                MatchingManager.TryInitializeSession();
+                MatchingManager._TryInitializeSession();
             }
         }
     }

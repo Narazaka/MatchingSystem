@@ -12,7 +12,7 @@ namespace Narazaka.VRChat.MatchingSystem
         [SerializeField] int MaxMemoryCount = 20;
         [UdonSynced] public uint[] MatchedPlayerHashes = new uint[0];
 
-        internal void AddMatchedPlayer(uint matchedPlayerHash)
+        public void _AddMatchedPlayer(uint matchedPlayerHash)
         {
             var index = Array.IndexOf(MatchedPlayerHashes, matchedPlayerHash);
             if (index < 0)

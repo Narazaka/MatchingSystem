@@ -28,7 +28,7 @@ namespace Narazaka.VRChat.MatchingSystem
             }
         }
 
-        public void ResetRoom(VRCPlayerApi owner)
+        public void _ResetRoom(VRCPlayerApi owner)
         {
             for (var i = 0; i < ResetTransforms.Length; i++)
             {

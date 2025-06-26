@@ -12,7 +12,7 @@ namespace Narazaka.VRChat.MatchingSystem
 
         public override void OnPlayerTriggerEnter(VRCPlayerApi player)
         {
-            if (Networking.IsOwner(MatchingManager.gameObject)) MatchingManager.Leave(player);
+            if (Networking.IsOwner(MatchingManager.gameObject)) MatchingManager._Leave(player);
         }
     }
 }

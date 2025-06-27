@@ -11,7 +11,7 @@ namespace Narazaka.VRChat.MatchingSystem
     public class MatchingManager : UdonSharpBehaviour
     {
         [SerializeField, UdonSynced] public float SessionTimeout = 300f; // 5min
-        [SerializeField] CyanPlayerObjectAssigner Assigner;
+        [SerializeField] public CyanPlayerObjectAssigner Assigner;
         [SerializeField] public MatchingRoom[] Rooms;
 
         [UdonSynced, NonSerialized] long SessionStartTimeTick;

@@ -1,4 +1,5 @@
-﻿using UdonSharp;
+﻿using Narazaka.VRChat.FadeTeleport;
+using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
@@ -8,19 +9,19 @@ namespace Narazaka.VRChat.MatchingSystem
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class Teleporter : UdonSharpBehaviour
     {
-        // TODO: yasashii teleport
+        [SerializeField] FadeTeleporter FadeTeleporter;
         [SerializeField] Transform Control;
         [SerializeField] Transform Information;
 
         internal void Respawn()
         {
-            Networking.LocalPlayer.Respawn();
+            FadeTeleporter.ReserveRespawn();
         }
 
         internal void TeleportTo(MatchingRoom room, int spawnPointIndex)
         {
             var spawnPoint = room.SpawnPoints[spawnPointIndex];
-            Networking.LocalPlayer.TeleportTo(spawnPoint.position, spawnPoint.rotation);
+            FadeTeleporter.ReserveTeleportTo(spawnPoint.position, spawnPoint.rotation);
             Control.position = room.ControlPosition.position;
             Control.rotation = room.ControlPosition.rotation;
             if (Information == null) return;

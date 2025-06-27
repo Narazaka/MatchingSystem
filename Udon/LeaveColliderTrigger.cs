@@ -6,7 +6,7 @@ using VRC.Udon;
 namespace Narazaka.VRChat.MatchingSystem
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-    class ColliderOwnerTrigger : UdonSharpBehaviour
+    public class LeaveColliderTrigger : UdonSharpBehaviour
     {
         [SerializeField] MatchingManager MatchingManager;
 
@@ -14,7 +14,7 @@ namespace Narazaka.VRChat.MatchingSystem
         {
             if (Networking.IsOwner(MatchingManager.gameObject))
             {
-                Logger.Log(nameof(ColliderOwnerTrigger), $"OnPlayerTriggerEnter", player);
+                Logger.Log(nameof(LeaveColliderTrigger), $"OnPlayerTriggerEnter", player);
                 MatchingManager._Leave(player);
             }
         }

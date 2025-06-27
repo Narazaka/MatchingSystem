@@ -53,8 +53,8 @@ namespace Narazaka.VRChat.MatchingSystem
             var minutes = Mathf.FloorToInt(remain / 60f);
             var seconds = Mathf.FloorToInt(remain % 60f);
             TimeText.text = $"{minutes:00}:{seconds:00}";
-            RemainButton.color = MatchingPlayer.ReserveLeave ? Color.red : Color.white;
-            LeaveButton.color = MatchingPlayer.ReserveRemain ? Color.green : Color.white;
+            RemainButton.color = MatchingPlayer.ReserveRemain ? Color.green : Color.white;
+            LeaveButton.color = MatchingPlayer.ReserveLeave ? Color.red : Color.white;
         }
 
         void TryInitializeSession()

@@ -6,6 +6,7 @@ using VRC.Udon;
 
 namespace Narazaka.VRChat.MatchingSystem
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class DebugJoinLeave : UdonSharpBehaviour
     {
         [SerializeField] MatchingManager MatchingManager;

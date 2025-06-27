@@ -6,10 +6,11 @@
         "VRC.Udon",
         "VRC.Udon.Serialization.OdinSerializer",
         "UdonSharp.Runtime",
+        "Unity.TextMeshPro",
+        "Cyan.PlayerObjectPool.UdonSharp",
         "Narazaka.SimpleHash",
         "Narazaka.SimpleHash.UdonEncoding",
-        "Cyan.PlayerObjectPool.UdonSharp",
-        "Unity.TextMeshPro"
+        "Narazaka.VRChat.FadeTeleport"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

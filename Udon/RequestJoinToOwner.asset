@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
-  m_Name: InteractToOwner
+  m_Name: RequestJoinToOwner
   m_EditorClassIdentifier: 
   serializedUdonProgramAsset: {fileID: 11400000, guid: 9928f9394c102a3458313247b9fd9d86,
     type: 2}
@@ -21,7 +21,7 @@ MonoBehaviour:
   compiledVersion: 2
   behaviourSyncMode: 4
   hasInteractEvent: 1
-  scriptID: -7261301230876875006
+  scriptID: 3831511977894989872
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 

@@ -6,12 +6,31 @@ using VRC.Udon;
 namespace Narazaka.VRChat.MatchingSystem
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    public class MatchingTimingManager : UdonSharpBehaviour
+    public class MatchingTimingManager : EventEmitter
     {
         [SerializeField] MatchingManager MatchingManager;
-        [SerializeField, UdonSynced] public float SessionTimeout = 300f; // 5min
+        [SerializeField, UdonSynced, FieldChangeCallback(nameof(SessionTimeout))] float _sessionTimeout = 300f; // 5min
+        public float SessionTimeout
+        {
+            get => _sessionTimeout;
+            private set
+            {
+                if (_sessionTimeout == value) return;
+                _sessionTimeout = value;
+                NotifyEvent("_OnSessionTimeoutChanged");
+            }
+        }
         [SerializeField] float SessionChangeInterval = 2.5f;
         [SerializeField] public float CheckInterval = 0.5f;
+
+        public void _SetSessionTimeout(float timeout)
+        {
+            if (Networking.IsOwner(gameObject))
+            {
+                SessionTimeout = timeout;
+                RequestSerialization();
+            }
+        }
 
         public int DisplayRemainTime
         {

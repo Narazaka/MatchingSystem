@@ -2,13 +2,14 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using UdonSharpEditor;
+using UdonSharp;
 
 namespace Narazaka.VRChat.MatchingSystem.Editor
 {
     abstract class CommonPropertiesEditor : UnityEditor.Editor
     {
-        SerializedProperty MatchingManager;
-        SerializedProperty MatchingTimingManager;
+        protected SerializedProperty MatchingManager;
+        protected SerializedProperty MatchingTimingManager;
 
         void OnEnable()
         {
@@ -18,7 +19,7 @@ namespace Narazaka.VRChat.MatchingSystem.Editor
 
         public override void OnInspectorGUI()
         {
-            if (UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target)) return;
+            if (target is UdonSharpBehaviour && UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target)) return;
             base.OnInspectorGUI();
             SetupCommonProperties();
         }

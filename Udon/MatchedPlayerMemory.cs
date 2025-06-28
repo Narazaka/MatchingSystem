@@ -10,7 +10,7 @@ namespace Narazaka.VRChat.MatchingSystem
     public class MatchedPlayerMemory : UdonSharpBehaviour
     {
         [SerializeField] int MaxMemoryCount = 20;
-        [UdonSynced] public uint[] MatchedPlayerHashes = new uint[0];
+        [UdonSynced, NonSerialized] public uint[] MatchedPlayerHashes = new uint[0];
 
         public void _AddMatchedPlayer(uint matchedPlayerHash)
         {

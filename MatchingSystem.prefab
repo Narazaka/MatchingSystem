@@ -178,7 +178,7 @@ MonoBehaviour:
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 3189239943641029731}
   MatchingManager: {fileID: 1701502241608481393}
-  SessionTimeout: 300
+  _sessionTimeout: 300
   SessionChangeInterval: 2.5
   CheckInterval: 0.5
 --- !u!114 &3189239943641029731
@@ -306,7 +306,7 @@ MonoBehaviour:
   AutoGenerate: 0
   Root: {fileID: 0}
   RoomSettings:
-  - RoomPrefab: {fileID: 5321497285375614552, guid: 4e040629c02c3c749be57132168d2676,
+  - RoomPrefab: {fileID: 4473731512186546336, guid: db50eaed86bbc4945b4f534487165efc,
       type: 3}
     RoomCount: 16
   Bounds: {x: 50, y: 50, z: 50}

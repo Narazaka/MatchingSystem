@@ -41,7 +41,7 @@ namespace Narazaka.VRChat.MatchingSystem
         {
             var now = Networking.GetNetworkDateTime();
             var past = now - MatchingManager.SessionStartTime;
-            var remain = MatchingManager.SessionTimeout - (float)past.TotalSeconds;
+            var remain = MatchingManager.SessionTimeout + MatchingManager.SessionChangeInterval - (float)past.TotalSeconds;
             if (remain <= 0.5f)
             {
                 TryInitializeSession();
@@ -49,6 +49,10 @@ namespace Narazaka.VRChat.MatchingSystem
             if (remain < 0f)
             {
                 remain = 0f;
+            }
+            else if (remain > MatchingManager.SessionTimeout)
+            {
+                remain = MatchingManager.SessionTimeout;
             }
             var minutes = Mathf.FloorToInt(remain / 60f);
             var seconds = Mathf.FloorToInt(remain % 60f);

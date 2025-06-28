@@ -11,6 +11,7 @@ namespace Narazaka.VRChat.MatchingSystem
     public class MatchingManager : UdonSharpBehaviour
     {
         [SerializeField, UdonSynced] public float SessionTimeout = 300f; // 5min
+        [SerializeField] public float SessionChangeInterval = 2.5f;
         [SerializeField] public CyanPlayerObjectAssigner Assigner;
         [SerializeField] public MatchingRoom[] Rooms;
 
@@ -112,6 +113,11 @@ namespace Narazaka.VRChat.MatchingSystem
         {
             Logger.Log(nameof(MatchingManager), nameof(_Leave), player);
             var subjectPlayerRoom = GetMatchingPlayerRoom(player);
+            if (subjectPlayerRoom == null)
+            {
+                Logger.Log(nameof(MatchingManager), nameof(_Leave), player, "not found MatchingPlayerRoom");
+                return;
+            }
             subjectPlayerRoom._SetRoom(-1);
             subjectPlayerRoom._SetJoiningSessionId(-1);
         }

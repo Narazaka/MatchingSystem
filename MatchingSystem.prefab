@@ -178,6 +178,7 @@ MonoBehaviour:
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 3654836347723380639}
   SessionTimeout: 300
+  SessionChangeInterval: 2.5
   Assigner: {fileID: 6206917399984705955}
   Rooms: []
 --- !u!114 &3654836347723380639

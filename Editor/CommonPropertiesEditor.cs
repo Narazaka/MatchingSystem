@@ -8,10 +8,12 @@ namespace Narazaka.VRChat.MatchingSystem.Editor
     abstract class CommonPropertiesEditor : UnityEditor.Editor
     {
         SerializedProperty MatchingManager;
+        SerializedProperty MatchingTimingManager;
 
         void OnEnable()
         {
             MatchingManager = serializedObject.FindProperty("MatchingManager");
+            MatchingTimingManager = serializedObject.FindProperty("MatchingTimingManager");
         }
 
         public override void OnInspectorGUI()
@@ -24,9 +26,14 @@ namespace Narazaka.VRChat.MatchingSystem.Editor
         protected void SetupCommonProperties()
         {
             serializedObject.UpdateIfRequiredOrScript();
-            if (MatchingManager.objectReferenceValue == null)
+            if (MatchingManager != null && MatchingManager.objectReferenceValue == null)
             {
                 MatchingManager.objectReferenceValue = FindObjectsByType<MatchingManager>(FindObjectsInactive.Include, FindObjectsSortMode.None).FirstOrDefault();
+                serializedObject.ApplyModifiedProperties();
+            }
+            if (MatchingTimingManager != null && MatchingTimingManager.objectReferenceValue == null)
+            {
+                MatchingTimingManager.objectReferenceValue = FindObjectsByType<MatchingTimingManager>(FindObjectsInactive.Include, FindObjectsSortMode.None).FirstOrDefault();
                 serializedObject.ApplyModifiedProperties();
             }
         }

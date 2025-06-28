@@ -10,12 +10,10 @@ namespace Narazaka.VRChat.MatchingSystem
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class MatchingManager : UdonSharpBehaviour
     {
-        [SerializeField, UdonSynced] public float SessionTimeout = 300f; // 5min
-        [SerializeField] public float SessionChangeInterval = 2.5f;
         [SerializeField] public CyanPlayerObjectAssigner Assigner;
         [SerializeField] public MatchingRoom[] Rooms;
 
-        [UdonSynced, NonSerialized] long SessionStartTimeTick;
+        [UdonSynced] long SessionStartTimeTick;
         public DateTime SessionStartTime
         {
             get => new DateTime(SessionStartTimeTick);
@@ -24,7 +22,7 @@ namespace Narazaka.VRChat.MatchingSystem
                 SessionStartTimeTick = value.Ticks;
             }
         }
-        [UdonSynced, NonSerialized, FieldChangeCallback(nameof(SessionId))] short _sessionId = -1; // 68 days (by 3min)
+        [UdonSynced, FieldChangeCallback(nameof(SessionId))] short _sessionId = -1; // 68 days (by 3min)
         public short SessionId
         {
             get => _sessionId;
@@ -33,14 +31,6 @@ namespace Narazaka.VRChat.MatchingSystem
                 if (_sessionId == value) return;
                 _sessionId = value;
                 CallResetRooms();
-            }
-        }
-
-        public override void OnPlayerJoined(VRCPlayerApi player)
-        {
-            if (player.isLocal && IsOwner)
-            {
-                InitializeSession();
             }
         }
 
@@ -56,6 +46,11 @@ namespace Narazaka.VRChat.MatchingSystem
         public void _Join(VRCPlayerApi player)
         {
             Logger.Log(nameof(MatchingManager), nameof(_Join), player);
+            if (SessionId == -1)
+            {
+                Logger.Log(nameof(MatchingManager), nameof(_Join), player, "START FIRST SESSION");
+                InitializeSession();
+            }
             var subjectPlayerRoom = GetMatchingPlayerRoom(player);
 
             var playerRoomComponents = GetMatchingPlayerRooms();
@@ -122,12 +117,12 @@ namespace Narazaka.VRChat.MatchingSystem
             subjectPlayerRoom._SetJoiningSessionId(-1);
         }
 
-        public void _TryInitializeSession()
+        /// <summary>
+        /// by owner (timing)
+        /// </summary>
+        public void _InitializeSession()
         {
-            if (IsOwner && SessionId >= 0) // do not trigger first session
-            {
-                InitializeSession();
-            }
+            InitializeSession();
         }
 
         void InitializeSession()

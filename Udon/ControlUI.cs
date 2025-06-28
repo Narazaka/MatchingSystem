@@ -10,7 +10,7 @@ namespace Narazaka.VRChat.MatchingSystem
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class ControlUI : UdonSharpBehaviour
     {
-        [SerializeField] MatchingManager MatchingManager;
+        [SerializeField] MatchingTimingManager MatchingTimingManager;
         [SerializeField] MatchingPlayer TemplateMatchingPlayer;
         [SerializeField] TextMeshProUGUI TimeText;
         [SerializeField] Image RemainButton;
@@ -39,34 +39,12 @@ namespace Narazaka.VRChat.MatchingSystem
 
         void Update()
         {
-            var now = Networking.GetNetworkDateTime();
-            var past = now - MatchingManager.SessionStartTime;
-            var remain = MatchingManager.SessionTimeout + MatchingManager.SessionChangeInterval - (float)past.TotalSeconds;
-            if (remain <= 0.5f)
-            {
-                TryInitializeSession();
-            }
-            if (remain < 0f)
-            {
-                remain = 0f;
-            }
-            else if (remain > MatchingManager.SessionTimeout)
-            {
-                remain = MatchingManager.SessionTimeout;
-            }
+            var remain = MatchingTimingManager.DisplayRemainTime;
             var minutes = Mathf.FloorToInt(remain / 60f);
             var seconds = Mathf.FloorToInt(remain % 60f);
             TimeText.text = $"{minutes:00}:{seconds:00}";
             RemainButton.color = MatchingPlayer.ReserveRemain ? Color.green : Color.white;
             LeaveButton.color = MatchingPlayer.ReserveLeave ? Color.red : Color.white;
-        }
-
-        void TryInitializeSession()
-        {
-            if (Networking.IsOwner(MatchingManager.gameObject))
-            {
-                MatchingManager._TryInitializeSession();
-            }
         }
     }
 }

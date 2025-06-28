@@ -12,7 +12,11 @@
   "url" : "https://github.com/Narazaka/MatchingSystem.git",
   "unity": "2022.3",
   "vpmDependencies": {
-    "com.vrchat.avatars": ">=3.7.5",
-    "com.vrchat.worlds": ">=3.7.5"
+    "com.vrchat.worlds": ">=3.8.2",
+    "com.cyan.playerobjectpool": ">=1.1.2 <2.0.0",
+    "net.narazaka.simple-hash": ">=3.0.0",
+    "net.narazaka.vrchat.tmp-fallback-fonts-jp": ">=1.0.2",
+    "net.narazaka.vrchat.fade-teleport": ">=0.1.1 <2.0.0",
+    "net.narazaka.unity.area-partition": ">=1.1.1 <2.0.0"
   }
 }

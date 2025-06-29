@@ -1,3 +1,4 @@
+// #define MATCHINGSYSTEM_DEBUG
 using System;
 
 namespace Narazaka.VRChat.MatchingSystem
@@ -18,6 +19,12 @@ namespace Narazaka.VRChat.MatchingSystem
                 return new int[0];
             }
 
+            var playerHashes = new uint[playerCount];
+            for (int i = 0; i < playerCount; i++)
+            {
+                playerHashes[i] = players[i].SelfPlayerHash;
+            }
+
             // 2. Create all possible pairs and store them in parallel arrays
             int pairCount = playerCount * (playerCount - 1) / 2;
             var pairWeights = new int[pairCount];
@@ -25,17 +32,25 @@ namespace Narazaka.VRChat.MatchingSystem
             var pairPlayerIndices2 = new int[pairCount];
             int currentPairIndex = 0;
 
+            var log = "";
             for (int i = 0; i < playerCount; i++)
             {
                 for (int j = i + 1; j < playerCount; j++)
                 {
                     // Invert weight to sort descending with an ascending sort algorithm
-                    pairWeights[currentPairIndex] = -CalculateWeight(players[i], players[j]);
+                    pairWeights[currentPairIndex] = -CalculateWeight(players[i], playerHashes[i], players[j], playerHashes[j]);
                     pairPlayerIndices1[currentPairIndex] = i;
                     pairPlayerIndices2[currentPairIndex] = j;
+#if MATCHINGSYSTEM_DEBUG
+                    log += $"({i} {j})<{pairWeights[currentPairIndex]}> ";
+#endif
+
                     currentPairIndex++;
                 }
             }
+#if MATCHINGSYSTEM_DEBUG
+            Logger.Log(nameof(GreedyMatcher), nameof(MakeMatching), "LIST    " + log);
+#endif
 
             // 3. Sort pairs by inverted weight (ascending).
             // Create an array of indices [0, 1, 2, ...] to be sorted according to the weights.
@@ -54,6 +69,7 @@ namespace Narazaka.VRChat.MatchingSystem
             var finalMatchedPairs_Player2 = new int[playerCount / 2];
             int finalPairCount = 0;
 
+            log = "";
             for (int i = 0; i < pairCount; i++)
             {
                 int originalPairIndex = pairOrder[i];
@@ -62,6 +78,7 @@ namespace Narazaka.VRChat.MatchingSystem
 
                 if (!matchedPlayerIndices[pIndex1] && !matchedPlayerIndices[pIndex2])
                 {
+                    log += $"({pIndex1} {pIndex2})<{pairWeights[i]}> ";
                     finalMatchedPairs_Player1[finalPairCount] = pIndex1;
                     finalMatchedPairs_Player2[finalPairCount] = pIndex2;
                     finalPairCount++;
@@ -70,6 +87,7 @@ namespace Narazaka.VRChat.MatchingSystem
                     matchedPlayerIndices[pIndex2] = true;
                 }
             }
+            Logger.Log(nameof(GreedyMatcher), nameof(MakeMatching), "MATCHED " + log);
 
             // 5. Store the results in a flattened array
             var resultMatchedPlayerIds = new int[finalPairCount * 2];
@@ -87,11 +105,11 @@ namespace Narazaka.VRChat.MatchingSystem
         /// 
         /// higher weight means better match.
         /// </summary>
-        static int CalculateWeight(MatchingPlayerRoom player1, MatchingPlayerRoom player2)
+        static int CalculateWeight(MatchingPlayerRoom player1, uint player1hash, MatchingPlayerRoom player2, uint player2hash)
         {
             var score = 0;
-            score -= Array.IndexOf(player1.MatchingPlayer.MatchedPlayerHashes, player2.Owner.playerId) * 100;
-            score -= Array.IndexOf(player2.MatchingPlayer.MatchedPlayerHashes, player1.Owner.playerId) * 100;
+            score -= Array.IndexOf(player1.MatchingPlayer.MatchedPlayerHashes, player2hash) * 100;
+            score -= Array.IndexOf(player2.MatchingPlayer.MatchedPlayerHashes, player1hash) * 100;
             return score;
         }
     }

@@ -37,6 +37,30 @@ namespace Narazaka.VRChat.MatchingSystem
             playerIds = newPlayerIds;
         }
 
+        public void JoinAll()
+        {
+            for (var i = 0; i < playerIds.Length; i++)
+            {
+                var player = VRCPlayerApi.GetPlayerById(playerIds[i]);
+                if (player != null && player.IsValid())
+                {
+                    MatchingManager._Join(player);
+                }
+            }
+        }
+
+        public void LeaveAll()
+        {
+            for (var i = 0; i < playerIds.Length; i++)
+            {
+                var player = VRCPlayerApi.GetPlayerById(playerIds[i]);
+                if (player != null && player.IsValid())
+                {
+                    MatchingManager._Leave(player);
+                }
+            }
+        }
+
         public void Join()
         {
             var player = Player();

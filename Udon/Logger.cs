@@ -12,7 +12,16 @@ namespace Narazaka.VRChat.MatchingSystem
 
         public static void Log(string cls, string subject, VRCPlayerApi player, string message = null)
         {
-            Debug.Log($"{Format(cls, subject)}<[{player.playerId}]{(player.isLocal ? "(Local)" : "")}{player.displayName}> {message}");
+            Debug.Log($"{Format(cls, subject)}[{Player(player)}] {message}");
+        }
+
+        public static string Player(VRCPlayerApi player)
+        {
+            if (player == null)
+            {
+                return "(null player)";
+            }
+            return $"|{player.playerId}|{player.displayName}{(player.isLocal ? "(Local)" : "")}";
         }
 
         static string Format(string cls, string subject)

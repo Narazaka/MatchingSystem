@@ -265,9 +265,9 @@ namespace Narazaka.VRChat.MatchingSystem
 
         bool IsOwner { get => Networking.IsOwner(gameObject); }
 
-#if UNITY_EDITOR
         // for test
-        [NonSerialized] public MatchingPlayerRoom[] matchingPlayerRoomsForTest = null;
+        MatchingPlayerRoom[] matchingPlayerRoomsForTest = null;
+#if UNITY_EDITOR
         Component[] GetMatchingPlayerRooms() => matchingPlayerRoomsForTest == null ? Assigner._GetActivePoolObjects() : matchingPlayerRoomsForTest;
         MatchingPlayerRoom GetMatchingPlayerRoom(VRCPlayerApi player)
         {

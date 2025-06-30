@@ -26,7 +26,7 @@ namespace Narazaka.VRChat.MatchingSystem
             var matchingRooms = initialPlayers.Select(s => MakeMatchingRoom()).ToArray();
             manager.Rooms = matchingRooms;
             var players = initialPlayers.Select((s, i) => MakePlayer(useDisplayNames ? s.displayName : $"{i}", i + 1, manager, teleporter)).ToArray();
-            manager.matchingPlayerRoomsForTest = players;
+            typeof(MatchingManager).GetField("matchingPlayerRoomsForTest", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(manager, players);
             for (var i = 0; i < initialPlayers.Length; i++)
             {
                 var initialPlayer = initialPlayers[i];

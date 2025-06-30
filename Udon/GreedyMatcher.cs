@@ -16,6 +16,7 @@ namespace Narazaka.VRChat.MatchingSystem
 
             if (playerCount < 2)
             {
+                Logger.Log(nameof(GreedyMatcher), nameof(MakeMatching), $"(End) {players.Length} players (no match)");
                 return new int[0];
             }
 
@@ -90,14 +91,14 @@ namespace Narazaka.VRChat.MatchingSystem
             Logger.Log(nameof(GreedyMatcher), nameof(MakeMatching), "MATCHED " + log);
 
             // 5. Store the results in a flattened array
-            var resultMatchedPlayerIds = new int[finalPairCount * 2];
+            var resultMatchedPlayerIndexes = new int[finalPairCount * 2];
             for (int i = 0; i < finalPairCount; i++)
             {
-                resultMatchedPlayerIds[i * 2] = finalMatchedPairs_Player1[i];
-                resultMatchedPlayerIds[i * 2 + 1] = finalMatchedPairs_Player2[i];
+                resultMatchedPlayerIndexes[i * 2] = finalMatchedPairs_Player1[i];
+                resultMatchedPlayerIndexes[i * 2 + 1] = finalMatchedPairs_Player2[i];
             }
             Logger.Log(nameof(GreedyMatcher), nameof(MakeMatching), $"(End) {players.Length} players");
-            return resultMatchedPlayerIds;
+            return resultMatchedPlayerIndexes;
         }
 
         /// <summary>
@@ -108,6 +109,10 @@ namespace Narazaka.VRChat.MatchingSystem
         static int CalculateWeight(MatchingPlayerRoom player1, uint player1hash, MatchingPlayerRoom player2, uint player2hash)
         {
             var score = 0;
+            score += !player1.Matched ? 100000 : 0;
+            score += !player2.Matched ? 100000 : 0;
+            score += player1.ExperiencedLoneliness ? 100000 : 0;
+            score += player2.ExperiencedLoneliness ? 100000 : 0;
             score -= Array.IndexOf(player1.MatchingPlayer.MatchedPlayerHashes, player2hash) * 100;
             score -= Array.IndexOf(player2.MatchingPlayer.MatchedPlayerHashes, player1hash) * 100;
             return score;

@@ -22,11 +22,16 @@ namespace Narazaka.VRChat.MatchingSystem
         {
             var spawnPoint = room.SpawnPoints[spawnPointIndex];
             FadeTeleporter.ReserveTeleportTo(spawnPoint.position, spawnPoint.rotation);
-            Control.position = room.ControlPosition.position;
-            Control.rotation = room.ControlPosition.rotation;
-            if (Information == null) return;
-            Information.position = room.InformationPosition.position;
-            Information.rotation = room.InformationPosition.rotation;
+            if (Control != null)
+            {
+                Control.position = room.ControlPosition.position;
+                Control.rotation = room.ControlPosition.rotation;
+            }
+            if (Information != null)
+            {
+                Information.position = room.InformationPosition.position;
+                Information.rotation = room.InformationPosition.rotation;
+            }
         }
     }
 }

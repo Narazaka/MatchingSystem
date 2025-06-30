@@ -1,7 +1,10 @@
+#if UNITY_EDITOR
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 namespace Narazaka.VRChat.MatchingSystem
 {
     public class GreedyMatcherTest : MonoBehaviour
@@ -12,13 +15,18 @@ namespace Narazaka.VRChat.MatchingSystem
             public string displayName;
             public int[] matchedIndexes = new int[0];
         }
-        public StartData[] initialPlayers;
-        public bool useDisplayNames = false;
         public int sessionCount = 32;
-        MatchingPlayerRoom[] matchingPlayerRooms;
+        public bool displayMatchedLogsByStep = false;
+        public bool useDisplayNames = false;
+        public StartData[] initialPlayers;
         public void RunTest()
         {
-            var players = initialPlayers.Select((s, i) => MakePlayer(useDisplayNames ? s.displayName : $"{i}")).ToArray();
+            var teleporter = MakeTeleporter();
+            var manager = MakeManager();
+            var matchingRooms = initialPlayers.Select(s => MakeMatchingRoom()).ToArray();
+            manager.Rooms = matchingRooms;
+            var players = initialPlayers.Select((s, i) => MakePlayer(useDisplayNames ? s.displayName : $"{i}", i + 1, manager, teleporter)).ToArray();
+            manager.matchingPlayerRoomsForTest = players;
             for (var i = 0; i < initialPlayers.Length; i++)
             {
                 var initialPlayer = initialPlayers[i];
@@ -42,25 +50,94 @@ namespace Narazaka.VRChat.MatchingSystem
             {
                 for (var j = 0; j < players.Length; j++)
                 {
-                    Debug.Log("hashm " + j + " [" + string.Join(", ", players[j].MatchingPlayer.MatchedPlayerHashes.Select(h => hashes[h])) + "]");
+                    Debug.Log($"hashs {j} (exlonely={players[j].ExperiencedLoneliness})" + " [" + string.Join(", ", players[j].MatchingPlayer.MatchedPlayerHashes.Select(h => hashes[h])) + "]");
                 }
-                var result = GreedyMatcher.MakeMatching(players);
-                var nomatch = players.Select((p, i) => i).ToHashSet();
-                for (var j = 0; j < result.Length; j += 2)
+                if (sessionIndex == 0)
                 {
-                    players[result[j]].MatchingPlayer._AddMatchedPlayerHash(players[result[j + 1]].SelfPlayerHash);
-                    matchedlog[result[j]].Add(result[j + 1]);
-                    players[result[j + 1]].MatchingPlayer._AddMatchedPlayerHash(players[result[j]].SelfPlayerHash);
-                    matchedlog[result[j + 1]].Add(result[j]);
-                    nomatch.Remove(result[j]);
-                    nomatch.Remove(result[j + 1]);
+                    for (var j = 0; j < players.Length; j++)
+                    {
+                        manager._Join(players[j].Owner);
+                    }
                 }
-                foreach (var index in nomatch)
+                else
                 {
-                    matchedlog[index].Add(-1);
+                    manager._InitializeSession();
                 }
-                Debug.Log("Matching Result: " + string.Join(", ", result));
+                foreach (var pair in players.GroupBy(p => p.RoomId).Select(p => p.ToArray()).ToArray())
+                {
+                    if (pair.Length == 1)
+                    {
+                        matchedlog[pair[0].Owner.playerId - 1].Add(-1); // No match
+                    }
+                    else
+                    {
+                        matchedlog[pair[0].Owner.playerId - 1].Add(pair[1].Owner.playerId - 1);
+                        matchedlog[pair[1].Owner.playerId - 1].Add(pair[0].Owner.playerId - 1);
+                    }
+                }
+                if (displayMatchedLogsByStep)
+                {
+                    DisplayMatchedLogs(players, matchedlog);
+                }
             }
+            if (!displayMatchedLogsByStep)
+            {
+                DisplayMatchedLogs(players, matchedlog);
+            }
+            foreach (var player in players)
+            {
+                DestroyImmediate(player.gameObject);
+            }
+            foreach (var room in matchingRooms)
+            {
+                DestroyImmediate(room.gameObject);
+            }
+            DestroyImmediate(manager.gameObject);
+            DestroyImmediate(teleporter.gameObject);
+        }
+
+        MatchingPlayerRoom MakePlayer(string displayName, int playerId, MatchingManager manager, Teleporter teleporter)
+        {
+            var go = new GameObject("Player");
+            var matchingPlayerRoom = go.AddComponent<MatchingPlayerRoom>();
+            var matchingPlayer = go.AddComponent<MatchingPlayer>();
+            var memory = go.AddComponent<MatchedPlayerMemory>();
+            var player = new VRC.SDKBase.VRCPlayerApi { displayName = displayName, isLocal = true };
+            typeof(VRC.SDKBase.VRCPlayerApi).GetField("mPlayerId", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(player, playerId);
+            matchingPlayerRoom.Owner = player;
+            matchingPlayerRoom.MatchingPlayer = matchingPlayer;
+            matchingPlayerRoom.Teleporter = teleporter;
+            matchingPlayerRoom.Manager = manager;
+            typeof(MatchingPlayer).GetField("MatchedPlayerMemory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(matchingPlayer, memory);
+            return matchingPlayerRoom;
+        }
+
+        MatchingRoom MakeMatchingRoom()
+        {
+            var go = new GameObject("MatchingRoom");
+            var matchingRoom = go.AddComponent<MatchingRoom>();
+            matchingRoom.SpawnPoints = new Transform[] {matchingRoom.transform, matchingRoom.transform };
+            return matchingRoom;
+        }
+
+        MatchingManager MakeManager()
+        {
+            var go = new GameObject("MatchingManager");
+            var matchingManager = go.AddComponent<MatchingManager>();
+            return matchingManager;
+        }
+
+        Teleporter MakeTeleporter()
+        {
+            var go = new GameObject("Teleporter");
+            var teleporter = go.AddComponent<Teleporter>();
+            var fadeTeleporter = go.AddComponent<Narazaka.VRChat.FadeTeleport.FadeTeleporter>();
+            typeof(Teleporter).GetField("FadeTeleporter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(teleporter, fadeTeleporter);
+            return teleporter;
+        }
+
+        void DisplayMatchedLogs(MatchingPlayerRoom[] players, List<int>[] matchedlog)
+        {
             for (var j = 0; j < players.Length; j++)
             {
                 var matchedCounts = new Dictionary<int, int>();
@@ -78,25 +155,9 @@ namespace Narazaka.VRChat.MatchingSystem
                         return (pid, 1);
                     }
                 }).ToList();
-                Debug.Log("matchedlog " + j + " [" + string.Join(", ", matchelogWithCounts.Select(a => a.Item1)) + "]");
-                Debug.Log("matchedlog " + j + " [" + string.Join(", ", matchelogWithCounts.Select(a => a.Item2)) + "]");
+                Debug.Log("matchedlog " + j + " [" + string.Join(", ", matchelogWithCounts.Select(a => a.Item1).Select(i => i == -1 ? "_" : $"{i}")) + "]");
+                Debug.Log("matchedcnt " + j + " [" + string.Join(", ", matchelogWithCounts.Select(a => a.Item2).Select(i => i == -1 ? "_" : $"{i}")) + "]");
             }
-            foreach (var player in players)
-            {
-                DestroyImmediate(player.gameObject);
-            }
-        }
-
-        MatchingPlayerRoom MakePlayer(string displayName)
-        {
-            var go = new GameObject("Player");
-            var matchingPlayerRoom = go.AddComponent<MatchingPlayerRoom>();
-            var matchingPlayer = go.AddComponent<MatchingPlayer>();
-            var memory = go.AddComponent<MatchedPlayerMemory>();
-            matchingPlayerRoom.Owner = new VRC.SDKBase.VRCPlayerApi { displayName = displayName };
-            matchingPlayerRoom.MatchingPlayer = matchingPlayer;
-            typeof(MatchingPlayer).GetField("MatchedPlayerMemory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(matchingPlayer, memory);
-            return matchingPlayerRoom;
         }
 
 #if UNITY_EDITOR
@@ -116,3 +177,4 @@ namespace Narazaka.VRChat.MatchingSystem
 #endif
     }
 }
+#endif

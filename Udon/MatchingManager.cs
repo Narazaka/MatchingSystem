@@ -87,6 +87,7 @@ namespace Narazaka.VRChat.MatchingSystem
                 if (zeroRoomIndex >= 0)
                 {
                     subjectPlayerRoom._SetRoom((sbyte)(zeroRoomIndex * 2));
+                    subjectPlayerRoom._SetMatch(0, false);
                     subjectPlayerRoom._SetJoiningSessionId(SessionId);
                     Logger.Log(nameof(MatchingManager), nameof(_Join), player, $"room=({zeroRoomIndex})a (ONLYONE)");
                 }
@@ -94,6 +95,7 @@ namespace Narazaka.VRChat.MatchingSystem
                 {
                     // no room available!!!!
                     subjectPlayerRoom._SetRoom(-1);
+                    subjectPlayerRoom._SetMatch(0, false);
                     subjectPlayerRoom._SetJoiningSessionId(-1);
                     Logger.Log(nameof(MatchingManager), nameof(_Join), player, "FAILED!");
                 }
@@ -164,6 +166,8 @@ namespace Narazaka.VRChat.MatchingSystem
                 }
             }
 
+            var lonelinessCount = 0;
+            var nextPlayerCount = 0;
             var shufflePlayerRooms = new MatchingPlayerRoom[len];
             var shuffleLen = 0;
             for (var i = 0; i < len; i++)
@@ -179,18 +183,30 @@ namespace Narazaka.VRChat.MatchingSystem
                 {
                     playerRoom._SetRemaining();
                     playerRoom._SetJoiningSessionId(nextSessionId);
+                    if (playerRoom.ExperiencedLoneliness) lonelinessCount++;
+                    nextPlayerCount++;
                     Logger.Log(nameof(MatchingManager), nameof(InitializeSession) + "(Prepare)", playerRoom.Owner, $"remain room=({playerRoom.RoomId})");
                 }
                 else if (playerRoom.Joined)
                 {
                     shufflePlayerRooms[shuffleLen] = playerRoom;
                     shuffleLen++;
+                    if (playerRoom.ExperiencedLoneliness) lonelinessCount++;
+                    nextPlayerCount++;
                     Logger.Log(nameof(MatchingManager), nameof(InitializeSession) + "(Prepare)", playerRoom.Owner, "shuffle");
                 }
                 else
                 {
                     // same value: not joined
                     Logger.Log(nameof(MatchingManager), nameof(InitializeSession) + "(Prepare)", playerRoom.Owner, "none");
+                }
+            }
+            if (lonelinessCount == nextPlayerCount)
+            {
+                Logger.Log(nameof(MatchingManager), nameof(InitializeSession) + "(ResetLoneliness)", $"All players are lonely! Resetting loneliness for all players.");
+                for (var i = 0; i < len; i++)
+                {
+                    playerRooms[i].ResetLoneliness();
                 }
             }
             var shufflePlayerRoomsResized = new MatchingPlayerRoom[shuffleLen];
@@ -221,6 +237,7 @@ namespace Narazaka.VRChat.MatchingSystem
             {
                 var unmatchedPlayerRoom = shufflePlayerRoomsResized[unmatchedIndex];
                 unmatchedPlayerRoom._SetRoom((sbyte)(roomIndex * 2));
+                unmatchedPlayerRoom._SetMatch(0, false);
                 unmatchedPlayerRoom._SetJoiningSessionId(nextSessionId);
                 Logger.Log(nameof(MatchingManager), nameof(InitializeSession) + "(Result)", unmatchedPlayerRoom.Owner, $"room=({roomIndex})a (unmatched)");
             }
@@ -262,8 +279,26 @@ namespace Narazaka.VRChat.MatchingSystem
 
         bool IsOwner { get => Networking.IsOwner(gameObject); }
 
+#if UNITY_EDITOR
+        // for test
+        [NonSerialized] public MatchingPlayerRoom[] matchingPlayerRoomsForTest = null;
+        Component[] GetMatchingPlayerRooms() => matchingPlayerRoomsForTest == null ? Assigner._GetActivePoolObjects() : matchingPlayerRoomsForTest;
+        MatchingPlayerRoom GetMatchingPlayerRoom(VRCPlayerApi player)
+        {
+            if (matchingPlayerRoomsForTest == null) return (MatchingPlayerRoom)Assigner._GetPlayerPooledUdon(player);
+            for (var i = 0; i < matchingPlayerRoomsForTest.Length; i++)
+            {
+                if (matchingPlayerRoomsForTest[i].Owner == player)
+                {
+                    return matchingPlayerRoomsForTest[i];
+                }
+            }
+            return null;
+        }
+#else
         Component[] GetMatchingPlayerRooms() => Assigner._GetActivePoolObjects();
 
         MatchingPlayerRoom GetMatchingPlayerRoom(VRCPlayerApi player) => (MatchingPlayerRoom)Assigner._GetPlayerPooledUdon(player);
+#endif
     }
 }

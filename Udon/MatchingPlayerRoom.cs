@@ -53,10 +53,21 @@ namespace Narazaka.VRChat.MatchingSystem
             }
         }
 
-        [UdonSynced] bool Matched;
+        [UdonSynced] bool _matched;
+        public bool Matched
+        {
+            get => _matched;
+            private set => _matched = value;
+        }
         bool prevMatched;
         [UdonSynced] uint MatchedPlayerHash;
         uint prevMatchedPlayerHash;
+        [UdonSynced] bool _experiencedLoneliness;
+        public bool ExperiencedLoneliness
+        {
+            get => _experiencedLoneliness;
+            private set => _experiencedLoneliness = value;
+        }
 
         [UdonSynced, NonSerialized] public bool Remaining;
         [UdonSynced] sbyte _roomAndSpawnPoint = -1;
@@ -100,6 +111,7 @@ namespace Narazaka.VRChat.MatchingSystem
         {
             Matched = matched;
             MatchedPlayerHash = matchedPlayerHash;
+            ExperiencedLoneliness = ExperiencedLoneliness || !matched;
             TryAddMatchedPlayerHash();
             RequestSerialization();
         }
@@ -112,6 +124,15 @@ namespace Narazaka.VRChat.MatchingSystem
         public void _SetJoiningSessionId(short sessionId)
         {
             JoiningSessionId = sessionId;
+            RequestSerialization();
+        }
+
+        /// <summary>
+        /// by manager (owner)
+        /// </summary>
+        public void ResetLoneliness()
+        {
+            ExperiencedLoneliness = false;
             RequestSerialization();
         }
 

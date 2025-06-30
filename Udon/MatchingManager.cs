@@ -52,6 +52,7 @@ namespace Narazaka.VRChat.MatchingSystem
                 InitializeSession();
             }
             var subjectPlayerRoom = GetMatchingPlayerRoom(player);
+            if (subjectPlayerRoom.Joined) return; // already joined
 
             var playerRoomComponents = GetMatchingPlayerRooms();
             var len = playerRoomComponents.Length;

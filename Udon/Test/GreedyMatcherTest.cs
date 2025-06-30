@@ -46,11 +46,18 @@ namespace Narazaka.VRChat.MatchingSystem
             }
             var hashes = players.Select((p, i) => (p, i)).ToDictionary(a => a.p.SelfPlayerHash, a => a.i);
             var matchedlog = players.Select(p => new List<int>()).ToArray();
+            var matchedPlayerMemoryOf = typeof(MatchingPlayer).GetField("MatchedPlayerMemory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var matchedPlayerHashesOf = typeof(MatchedPlayerMemory).GetField("MatchedPlayerHashes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            uint[] matchedPlayerHashes(MatchingPlayerRoom player)
+            {
+                var memory = matchedPlayerMemoryOf.GetValue(player.MatchingPlayer);
+                return matchedPlayerHashesOf.GetValue(memory) as uint[];
+            }
             for (var sessionIndex = 0; sessionIndex < sessionCount; sessionIndex++)
             {
                 for (var j = 0; j < players.Length; j++)
                 {
-                    Debug.Log($"hashs {j} (cm={players[j].ConsecutiveMatchedCount})" + " [" + string.Join(", ", players[j].MatchingPlayer.MatchedPlayerHashes.Select(h => hashes[h])) + "]");
+                    Debug.Log($"hashs {j} (cm={players[j].ConsecutiveMatchedCount})" + " [" + string.Join(", ", matchedPlayerHashes(players[j]).Select(h => hashes[h])) + "]");
                 }
                 if (sessionIndex == 0)
                 {

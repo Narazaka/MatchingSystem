@@ -15,9 +15,8 @@ namespace Narazaka.VRChat.MatchingSystem
         public bool ReserveLeave => State == PlayerState.ReserveLeave;
         public bool ReserveRemain => State == PlayerState.ReserveRemain;
 
-        public uint[] MatchedPlayerHashes => MatchedPlayerMemory.MatchedPlayerHashes;
-
         public void _AddMatchedPlayerHash(uint matchedPlayerHash) => MatchedPlayerMemory._AddMatchedPlayer(matchedPlayerHash);
+        public int _AlreadyMatchedRate(uint playerHash) => MatchedPlayerMemory._AlreadyMatchedRate(playerHash);
 
         public void _OnChangePair()
         {

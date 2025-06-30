@@ -1,4 +1,4 @@
-// #define MATCHINGSYSTEM_DEBUG
+#define MATCHINGSYSTEM_DEBUG
 using System;
 
 namespace Narazaka.VRChat.MatchingSystem
@@ -21,12 +21,13 @@ namespace Narazaka.VRChat.MatchingSystem
             }
 
             var playerHashes = new uint[playerCount];
-            sbyte maxConsecutiveMatchedCount = -1;
+            sbyte maxConsecutiveMatchedCount = -2;
+            var calcConsecutiveMatched = playerCount % 2 != 0;
             for (int i = 0; i < playerCount; i++)
             {
                 var player = players[i];
                 playerHashes[i] = player.SelfPlayerHash;
-                if (player.ConsecutiveMatchedCount > maxConsecutiveMatchedCount)
+                if (calcConsecutiveMatched && player.ConsecutiveMatchedCount > maxConsecutiveMatchedCount)
                 {
                     maxConsecutiveMatchedCount = player.ConsecutiveMatchedCount;
                 }
@@ -126,8 +127,8 @@ namespace Narazaka.VRChat.MatchingSystem
             var score = 0;
             score += player1.ConsecutiveMatchedCount == maxConsecutiveMatchedCount ? -100000 : 0;
             score += player2.ConsecutiveMatchedCount == maxConsecutiveMatchedCount ? -100000 : 0;
-            score -= Array.IndexOf(player1.MatchingPlayer.MatchedPlayerHashes, player2hash) * 100;
-            score -= Array.IndexOf(player2.MatchingPlayer.MatchedPlayerHashes, player1hash) * 100;
+            score -= player1.MatchingPlayer._AlreadyMatchedRate(player2hash) * 100;
+            score -= player2.MatchingPlayer._AlreadyMatchedRate(player1hash) * 100;
             return score;
         }
     }

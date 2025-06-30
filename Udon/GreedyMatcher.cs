@@ -77,11 +77,17 @@ namespace Narazaka.VRChat.MatchingSystem
             int finalPairCount = 0;
 
             log = "";
+#if MATCHINGSYSTEM_DEBUG
+            var log2 = "";
+#endif
             for (int i = 0; i < pairCount; i++)
             {
                 int originalPairIndex = pairOrder[i];
                 int pIndex1 = pairPlayerIndices1[originalPairIndex];
                 int pIndex2 = pairPlayerIndices2[originalPairIndex];
+#if MATCHINGSYSTEM_DEBUG
+                log2 += $"({pIndex1} {pIndex2})<{pairWeights[i]}> ";
+#endif
 
                 if (!matchedPlayerIndices[pIndex1] && !matchedPlayerIndices[pIndex2])
                 {
@@ -94,6 +100,9 @@ namespace Narazaka.VRChat.MatchingSystem
                     matchedPlayerIndices[pIndex2] = true;
                 }
             }
+#if MATCHINGSYSTEM_DEBUG
+            Logger.Log(nameof(GreedyMatcher), nameof(MakeMatching), "SORTED  " + log2);
+#endif
             Logger.Log(nameof(GreedyMatcher), nameof(MakeMatching), "MATCHED " + log);
 
             // 5. Store the results in a flattened array

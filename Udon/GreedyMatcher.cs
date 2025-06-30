@@ -21,9 +21,15 @@ namespace Narazaka.VRChat.MatchingSystem
             }
 
             var playerHashes = new uint[playerCount];
+            sbyte maxConsecutiveMatchedCount = -1;
             for (int i = 0; i < playerCount; i++)
             {
-                playerHashes[i] = players[i].SelfPlayerHash;
+                var player = players[i];
+                playerHashes[i] = player.SelfPlayerHash;
+                if (player.ConsecutiveMatchedCount > maxConsecutiveMatchedCount)
+                {
+                    maxConsecutiveMatchedCount = player.ConsecutiveMatchedCount;
+                }
             }
 
             // 2. Create all possible pairs and store them in parallel arrays
@@ -39,7 +45,7 @@ namespace Narazaka.VRChat.MatchingSystem
                 for (int j = i + 1; j < playerCount; j++)
                 {
                     // Invert weight to sort descending with an ascending sort algorithm
-                    pairWeights[currentPairIndex] = -CalculateWeight(players[i], playerHashes[i], players[j], playerHashes[j]);
+                    pairWeights[currentPairIndex] = -CalculateWeight(players[i], playerHashes[i], players[j], playerHashes[j], maxConsecutiveMatchedCount);
                     pairPlayerIndices1[currentPairIndex] = i;
                     pairPlayerIndices2[currentPairIndex] = j;
 #if MATCHINGSYSTEM_DEBUG
@@ -106,13 +112,11 @@ namespace Narazaka.VRChat.MatchingSystem
         /// 
         /// higher weight means better match.
         /// </summary>
-        static int CalculateWeight(MatchingPlayerRoom player1, uint player1hash, MatchingPlayerRoom player2, uint player2hash)
+        static int CalculateWeight(MatchingPlayerRoom player1, uint player1hash, MatchingPlayerRoom player2, uint player2hash, sbyte maxConsecutiveMatchedCount)
         {
             var score = 0;
-            score += !player1.Matched ? 100000 : 0;
-            score += !player2.Matched ? 100000 : 0;
-            score += player1.ExperiencedLoneliness ? 100000 : 0;
-            score += player2.ExperiencedLoneliness ? 100000 : 0;
+            score += player1.ConsecutiveMatchedCount == maxConsecutiveMatchedCount ? -100000 : 0;
+            score += player2.ConsecutiveMatchedCount == maxConsecutiveMatchedCount ? -100000 : 0;
             score -= Array.IndexOf(player1.MatchingPlayer.MatchedPlayerHashes, player2hash) * 100;
             score -= Array.IndexOf(player2.MatchingPlayer.MatchedPlayerHashes, player1hash) * 100;
             return score;

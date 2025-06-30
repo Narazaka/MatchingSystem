@@ -1,4 +1,4 @@
-﻿using Cyan.PlayerObjectPool;
+using Cyan.PlayerObjectPool;
 using System;
 using UdonSharp;
 using UnityEngine;
@@ -35,6 +35,7 @@ namespace Narazaka.VRChat.MatchingSystem
                 JoiningSessionId = -1;
                 Matched = false;
                 MatchedPlayerHash = 0;
+                ConsecutiveMatchedCount = 0;
                 Remaining = false;
                 RoomAndSpawnPoint = -1;
                 RequestSerialization();
@@ -62,11 +63,14 @@ namespace Narazaka.VRChat.MatchingSystem
         bool prevMatched;
         [UdonSynced] uint MatchedPlayerHash;
         uint prevMatchedPlayerHash;
-        [UdonSynced] bool _experiencedLoneliness;
-        public bool ExperiencedLoneliness
+        /// <summary>
+        /// 連続マッチ回数
+        /// </summary>
+        [UdonSynced] sbyte _consecutiveMatchedCount = 0;
+        public sbyte ConsecutiveMatchedCount
         {
-            get => _experiencedLoneliness;
-            private set => _experiencedLoneliness = value;
+            get => _consecutiveMatchedCount;
+            private set => _consecutiveMatchedCount = value;
         }
 
         [UdonSynced, NonSerialized] public bool Remaining;
@@ -107,11 +111,23 @@ namespace Narazaka.VRChat.MatchingSystem
         /// <summary>
         /// by manager (owner)
         /// </summary>
-        public void _SetMatch(uint matchedPlayerHash, bool matched)
+        public void _SetMatch(uint matchedPlayerHash)
         {
-            Matched = matched;
+            Matched = true;
             MatchedPlayerHash = matchedPlayerHash;
-            ExperiencedLoneliness = ExperiencedLoneliness || !matched;
+            ConsecutiveMatchedCount++;
+            TryAddMatchedPlayerHash();
+            RequestSerialization();
+        }
+
+        /// <summary>
+        /// by manager (owner)
+        /// </summary>
+        public void _SetUnmatch()
+        {
+            Matched = false;
+            MatchedPlayerHash = 0;
+            ConsecutiveMatchedCount = -1; // 終了までマッチしなかった場合と最初はマッチしなかったが人が来た場合を区別するために-1にする
             TryAddMatchedPlayerHash();
             RequestSerialization();
         }
@@ -124,15 +140,6 @@ namespace Narazaka.VRChat.MatchingSystem
         public void _SetJoiningSessionId(short sessionId)
         {
             JoiningSessionId = sessionId;
-            RequestSerialization();
-        }
-
-        /// <summary>
-        /// by manager (owner)
-        /// </summary>
-        public void ResetLoneliness()
-        {
-            ExperiencedLoneliness = false;
             RequestSerialization();
         }
 

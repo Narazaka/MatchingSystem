@@ -50,7 +50,7 @@ namespace Narazaka.VRChat.MatchingSystem
             {
                 for (var j = 0; j < players.Length; j++)
                 {
-                    Debug.Log($"hashs {j} (exlonely={players[j].ExperiencedLoneliness})" + " [" + string.Join(", ", players[j].MatchingPlayer.MatchedPlayerHashes.Select(h => hashes[h])) + "]");
+                    Debug.Log($"hashs {j} (cm={players[j].ConsecutiveMatchedCount})" + " [" + string.Join(", ", players[j].MatchingPlayer.MatchedPlayerHashes.Select(h => hashes[h])) + "]");
                 }
                 if (sessionIndex == 0)
                 {

@@ -129,6 +129,7 @@ namespace Narazaka.VRChat.MatchingSystem
             score += player2.ConsecutiveMatchedCount == maxConsecutiveMatchedCount ? -100000 : 0;
             score -= player1.MatchingPlayer._AlreadyMatchedRate(player2hash) * 100;
             score -= player2.MatchingPlayer._AlreadyMatchedRate(player1hash) * 100;
+            score += UnityEngine.Random.Range(0, 100); // Add some randomness to the score to avoid bias in the selection process
             return score;
         }
     }

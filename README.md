@@ -1,6 +1,6 @@
 # Matching System
 
-desc
+ランダムに1対1個室マッチングするワールドシステム
 
 ## Install
 

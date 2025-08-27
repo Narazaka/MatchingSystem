@@ -16,6 +16,13 @@ https://github.com/Narazaka/MatchingSystem/releases/latest から `net.narazaka.
 
 ## Usage
 
+### 前提
+
+まずTextMesh Pro VRC Fallback Font JPの設定をする必要があります。
+
+1. Project SettingsのTextMesh Pro→Import TMP Essentialsを実行
+2. メニューのTools→TextMesh Pro VRC Fallback Font JPを設定 を実行
+
 ### 構築済みPrefabを利用
 
 #### 最小限の構成

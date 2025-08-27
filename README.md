@@ -32,7 +32,7 @@ https://github.com/Narazaka/MatchingSystem/releases/latest から `net.narazaka.
 
 #### ベーシックな構成
 
-0. 必要パッケージを追加でインストールする
+0. 必要パッケージをVCCから追加でインストールする
   - Quiz System
   - VRC Player Tag Marker
 1. 新しいシーンを作り、MainCameraを削除する

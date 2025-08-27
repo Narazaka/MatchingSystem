@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7527547687287279464}
   - component: {fileID: 6946523626310855090}
   - component: {fileID: 4863475952781326228}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Remain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 8348758206692228326}
   - component: {fileID: 2194559090710275277}
   - component: {fileID: 3914676960565559444}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,7 +221,7 @@ GameObject:
   - component: {fileID: 1708156588478135406}
   - component: {fileID: 8536829878982544571}
   - component: {fileID: 5696897466158841740}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -357,7 +357,7 @@ GameObject:
   - component: {fileID: 2218646870936731027}
   - component: {fileID: 6130602190900554605}
   - component: {fileID: 6404735130560120192}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Leave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -489,7 +489,7 @@ GameObject:
   - component: {fileID: 7578180963309998601}
   - component: {fileID: 5851369491617603654}
   - component: {fileID: 5525192058977797985}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -626,7 +626,7 @@ GameObject:
   - component: {fileID: 8579016516068199930}
   - component: {fileID: 8581093022615491927}
   - component: {fileID: 3804239546810945352}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -740,7 +740,7 @@ GameObject:
   - component: {fileID: 1967087290914012076}
   - component: {fileID: 7364765861709167849}
   - component: {fileID: 672771433745412240}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: MatchingControl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -785,7 +785,7 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 672771433745412240}
-  MatchingManager: {fileID: 0}
+  MatchingTimingManager: {fileID: 0}
   TemplateMatchingPlayer: {fileID: 0}
   TimeText: {fileID: 7391085967483882562}
   RemainButton: {fileID: 6946523626310855090}
@@ -826,7 +826,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5945490106352593806}
   - component: {fileID: 3408494969985204107}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Controls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -891,7 +891,7 @@ GameObject:
   - component: {fileID: 4897374104570568966}
   - component: {fileID: 8175640438476022921}
   - component: {fileID: 7391085967483882562}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Time
   m_TagString: Untagged
   m_Icon: {fileID: 0}

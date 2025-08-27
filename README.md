@@ -83,6 +83,10 @@ https://github.com/Narazaka/MatchingSystem/releases/latest から `net.narazaka.
   - （オプショナル） `SessionTimeSelector` プレハブを配置する（時間指定UI）
 7. 以下は最小限の構成の「スポーン地点とは別の場所に、`MatchingSystem` プレハブを配置する」と同様
 
+## Changelog
+
+- 0.1.0-alpha.0: とりあえず
+
 ## License
 
 [Zlib License](LICENSE.txt)

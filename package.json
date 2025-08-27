@@ -1,6 +1,6 @@
 {
   "name": "net.narazaka.vrchat.matching-system",
-  "version": "1.0.0",
+  "version": "0.1.0-alpha.0",
   "displayName": "Matching System",
   "description": "ランダムに1対1個室マッチングするワールドシステム",
   "author": {
